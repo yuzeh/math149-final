@@ -1,4 +1,4 @@
-function [ U] = sampleU( n )
+function [ U ] = sampleU( n )
 %SAMPLEU Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -9,7 +9,7 @@ for row=1:n
     end
 end
 
-[U,R] = qr(M);
+U = qr_pos(M);
 
 end
 

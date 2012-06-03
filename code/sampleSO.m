@@ -3,10 +3,10 @@ function [ Q ] = sampleSO( n )
 %   Detailed explanation goes here
 
 M = randn(n);
-[Q,R] = qr(M);
-while det(Q) ~= 1
+Q = qr_pos(M);
+while det(Q) < 0
     M = randn(n);
-    [Q,R] = qr(M);
+    Q = qr_pos(M);
 end
 
 end
