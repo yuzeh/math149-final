@@ -1,0 +1,96 @@
+\documentclass[letterpaper,12pt]{article}
+
+\usepackage{fullpage}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{graphicx}
+\usepackage[font=small]{caption}
+\usepackage{subcaption}
+\usepackage{hyperref}
+
+\newtheorem{lemma}{Lemma}
+
+\DeclareMathOperator{\argmin}{arg\,min}
+\newcommand{\Tr}{^\text{T}}
+\newcommand{\reals}{\mathbf{R}}
+\newcommand{\complexes}{\mathbf{C}}
+\newcommand{\MG}[2]{\text{#1}(#2)}
+\newcommand{\qr}{\mathbf{qr}}
+
+{
+\title{Computing the Homology of Matrix groups}
+\author{Xavier Falco, Yuze ``Dan'' Huang, Rafael Witten}
+\date{\today}
+\begin{document}
+\begin{titlepage}
+\vspace{3in}
+\maketitle
+\thispagestyle{empty}
+\end{titlepage}
+\tableofcontents
+\thispagestyle{empty}
+\section{Sampling from $\MG{O}{n}$, $\MG{SO}{n}$, $\MG{U}{n}$, and $\MG{SU}{n}$}
+
+\subsection{\MG{O}{n} and \MG{SO}{n}}
+The following matlab code will sample uniformly from $\MG{O}{n}$:
+
+\begin{verbatim}
+function [X] = sample_from_O(n)
+[X,R] = qr(randn(n));
+\end{verbatim}
+
+In other words, we take the QR decomposition of a matrix whose elements are iid
+  normally distributed.
+To sample uniformly from $\MG{SO}{n}$, we sample from $\MG{O}{n}$, and then
+  ``flip'' the determinant if it is not correct:
+
+\begin{verbatim}
+function [X] = sample_from_SO(n)
+X = sample_from_O(n);
+if det(X) < 0
+  X(1,:) = -X(1,:);
+end
+\end{verbatim}
+
+We will prove that these two algorithms sample uniformly (in the Haar sense)
+  from their respective spaces.
+
+\begin{lemma}
+The first algorithm [re-word when we have algorithm references] will sample
+  uniformly from $\MG{O}{n}$, i.e. if $X$ is the output of the algorithm
+  [re-word], then for any set $S\subset \reals^{n\times n}$, $\Pr(X\in S) =
+  \Pr(X\in USV)$ for all $U,V \in \MG{O}{n}$.
+
+\begin{proof}
+Let $M$ be a random $n\times n$ matrix where the entries $s_{ij}$ are all iid
+  normally distributed.
+Let $\qr:\reals^{n\times n} \to \MG{O}{n}$ be the ``Q'' in the QR decomposition
+  of a matrix.
+\begin{align}
+\Pr(U\qr(M)V\in S) &= \Pr(\qr(UM)V \in S)\\
+  &= \Pr(\qr(M)V \in S)\\
+  &= \Pr( (V\Tr\qr(M)\Tr)\Tr \in S)\\
+  &= \Pr( (V\Tr\qr(M))\Tr \in S) \\
+  &= \Pr((\qr(M))\Tr \in S)\\
+  &= \Pr(\qr(M) \in S)\qedhere
+\end{align}
+\end{proof}
+\end{lemma}
+
+\subsection{\MG{U}{n} and \MG{SU}{n}}
+
+\begin{verbatim}
+function X = sample_from_U(n)
+  [X,R] = qr(randn(n) + 1i * randn(n));
+\end{verbatim}
+[Reference here]
+
+
+\thispagestyle{empty}
+\bibliographystyle{abbrv}
+\bibliography{writeup}
+
+\end{document}
+}
+
