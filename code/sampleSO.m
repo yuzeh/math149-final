@@ -4,9 +4,9 @@ function [ Q ] = sampleSO( n )
 
 M = randn(n);
 [Q,R] = qr(M);
-if det(Q) ~= 1
-    col = randi(n);
-    Q(:,col) = Q(:,col) * det(Q);
+while det(Q) ~= 1
+    M = randn(n);
+    [Q,R] = qr(M);
 end
 
 end

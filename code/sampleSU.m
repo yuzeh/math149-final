@@ -3,8 +3,8 @@ function [ U ] = sampleSU( n )
 %   Detailed explanation goes here
 
 U = sampleU(n);
-index = randi(n);
-U(:,index) = U(:,index) / det(U);
+num = conj(det(U)) ^ (1 / n);
+U = U * num;
 
 end
 
