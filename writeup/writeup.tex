@@ -8,6 +8,29 @@
 \usepackage[font=small]{caption}
 \usepackage{subcaption}
 \usepackage{hyperref}
+\usepackage{listings}
+\usepackage{color}
+\lstset{ %
+language=Matlab,                    % choose the language of the code
+basicstyle=\footnotesize\ttfamily,  % the size of the fonts that are used for the code
+numbers=none,                       % where to put the line-numbers
+numberstyle=\footnotesize,          % the size of the fonts that are used for the line-numbers
+stepnumber=1,                       % the step between two line-numbers. If it is 1 each line will be numbered
+numbersep=5pt,                      % how far the line-numbers are from the code
+backgroundcolor=\color{white},      % choose the background color. You must add \usepackage{color}
+showspaces=false,                   % show spaces adding particular underscores
+showstringspaces=false,             % underline spaces within strings
+showtabs=false,                     % show tabs within strings adding particular underscores
+frame=single,                       % adds a frame around the code
+tabsize=2,                          % sets default tabsize to 2 spaces
+captionpos=t,                       % sets the caption-position to bottom
+breaklines=true,                    % sets automatic line breaking
+breakatwhitespace=false,            % sets if automatic breaks should only happen at whitespace
+escapeinside={\%*}{*)},             % if you want to add a comment within your code
+xleftmargin=0.5in,
+xrightmargin=0.5in,
+columns=fullflexible
+}
 
 \newtheorem{lemma}{Lemma}
 
@@ -16,6 +39,10 @@
 \newcommand{\reals}{\mathbf{R}}
 \newcommand{\complexes}{\mathbf{C}}
 \newcommand{\MG}[2]{\text{#1}(#2)}
+\newcommand{\Un}{\MG{U}{n}}
+\newcommand{\On}{\MG{O}{n}}
+\newcommand{\SUn}{\MG{SU}{n}}
+\newcommand{\SOn}{\MG{SO}{n}}
 \newcommand{\qr}{\mathbf{qr}}
 
 {
@@ -23,49 +50,45 @@
 \author{Xavier Falco, Yuze ``Dan'' Huang, Rafael Witten}
 \date{\today}
 \begin{document}
-\begin{titlepage}
-\vspace{3in}
 \maketitle
 \thispagestyle{empty}
-\end{titlepage}
 \tableofcontents
 \thispagestyle{empty}
-\section{Sampling from $\MG{O}{n}$, $\MG{SO}{n}$, $\MG{U}{n}$, and $\MG{SU}{n}$}
+\section{Sampling from $\On$, $\SOn$, $\Un$, and $\SUn$}
 
-\subsection{\MG{O}{n} and \MG{SO}{n}}
-The following matlab code will sample uniformly from $\MG{O}{n}$:
+\subsection{$\On$ and $\SOn$}
+The following matlab code will sample uniformly from $\On$:
 
-\begin{verbatim}
+\begin{lstlisting}[label=sample_On,caption=Sampling from $\On$]
 function [X] = sample_from_O(n)
 [X,R] = qr(randn(n));
-\end{verbatim}
+\end{lstlisting}
 
 In other words, we take the QR decomposition of a matrix whose elements are iid
   normally distributed.
-To sample uniformly from $\MG{SO}{n}$, we sample from $\MG{O}{n}$, and then
+To sample uniformly from $\SOn$, we sample from $\On$, and then
   ``flip'' the determinant if it is not correct:
 
-\begin{verbatim}
+\begin{lstlisting}[label=sample_SOn,caption=Sampling from $\SOn$]
 function [X] = sample_from_SO(n)
 X = sample_from_O(n);
 if det(X) < 0
   X(1,:) = -X(1,:);
 end
-\end{verbatim}
+\end{lstlisting}
 
 We will prove that these two algorithms sample uniformly (in the Haar sense)
   from their respective spaces.
 
 \begin{lemma}
-The first algorithm [re-word when we have algorithm references] will sample
-  uniformly from $\MG{O}{n}$, i.e. if $X$ is the output of the algorithm
-  [re-word], then for any set $S\subset \reals^{n\times n}$, $\Pr(X\in S) =
-  \Pr(X\in USV)$ for all $U,V \in \MG{O}{n}$.
+Listing~\ref{sample_On} will sample uniformly from $\On$, i.e. if $X$
+  is the output of listing~\ref{sample_On}, then for any set $S\subset
+  \reals^{n\times n}$, $\Pr(X\in S) = \Pr(X\in USV)$ for all $U,V \in \On$.
 
 \begin{proof}
 Let $M$ be a random $n\times n$ matrix where the entries $s_{ij}$ are all iid
   normally distributed.
-Let $\qr:\reals^{n\times n} \to \MG{O}{n}$ be the ``Q'' in the QR decomposition
+Let $\qr:\reals^{n\times n} \to \On$ be the ``Q'' in the QR decomposition
   of a matrix.
 \begin{align}
 \Pr(U\qr(M)V\in S) &= \Pr(\qr(UM)V \in S)\\
@@ -78,14 +101,41 @@ Let $\qr:\reals^{n\times n} \to \MG{O}{n}$ be the ``Q'' in the QR decomposition
 \end{proof}
 \end{lemma}
 
-\subsection{\MG{U}{n} and \MG{SU}{n}}
+\subsection{$\Un$ and $\SUn$}
 
-\begin{verbatim}
-function X = sample_from_U(n)
-  [X,R] = qr(randn(n) + 1i * randn(n));
-\end{verbatim}
-[Reference here]
+For $\Un$, we have the same idea: generate a random complex matrix, and then
+  orthogonalize it.
+There is one small issue: without forcing constraints on the diagonal of the
+  matrix $R$ in the QR decomposition $M=QR$, this decomposition is actually
+  {\bf not} unique.
+This is important, because some implementations of $\qr$ will not induce
+  the Haar measure on $\Un$.
+However, if we constrain the diagonal of $R$ to have strictly positive (real)
+  entries, then the induced measure will be Haar.
 
+A proof that the measure induced by listing~\ref{sample_Un} is the Haar
+  measure on $\Un$, meaning this sampling method uniformly samples from $\Un$,
+  is provided in \cite{Mezzadri2007}.
+
+\begin{lstlisting}[label=sample_Un,caption=Sampling from $\Un$]
+function [Q] = qr_pos(M)
+[Q,R] = qr(M);
+Q = Q * diag(sign(diag(R)));
+end
+
+function [X] = sample_from_U(n)
+X = qr_pos(randn(n) + 1i * randn(n));
+end
+\end{lstlisting}
+
+To sample uniformly from $\SUn$, we simply force the determinant of the
+  output of listing~\ref{sample_Un} to be 1:
+
+\begin{lstlisting}[label=sample_SUn,caption=Sampling from $\SUn$]
+function [X] = sample_from_SU(n)
+X = sample_from_U(n);
+X = X / (det(X)^(1/n));
+\end{lstlisting}
 
 \thispagestyle{empty}
 \bibliographystyle{abbrv}
