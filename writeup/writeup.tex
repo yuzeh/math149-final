@@ -36,9 +36,11 @@ columns=fullflexible
 
 \DeclareMathOperator{\argmin}{arg\,min}
 \newcommand{\Tr}{^\text{T}}
+\newcommand{\zeros}{\mathbf{0}}
+\newcommand{\ones}{\mathbf{1}}
 \newcommand{\reals}{\mathbf{R}}
 \newcommand{\complexes}{\mathbf{C}}
-\newcommand{\MG}[2]{\text{#1}(#2)}
+\newcommand{\MG}[2]{{\text{#1}(#2)}}
 \newcommand{\Un}{\MG{U}{n}}
 \newcommand{\On}{\MG{O}{n}}
 \newcommand{\SUn}{\MG{SU}{n}}
@@ -52,8 +54,8 @@ columns=fullflexible
 \begin{document}
 \maketitle
 \thispagestyle{empty}
-\tableofcontents
-\thispagestyle{empty}
+%\tableofcontents
+%\thispagestyle{empty}
 \section{Sampling from $\On$, $\SOn$, $\Un$, and $\SUn$}
 
 \subsection{$\On$ and $\SOn$}
@@ -91,12 +93,56 @@ Let $M$ be a random $n\times n$ matrix where the entries $s_{ij}$ are all iid
 Let $\qr:\reals^{n\times n} \to \On$ be the ``Q'' in the QR decomposition
   of a matrix.
 \begin{align}
-\Pr(U\qr(M)V\in S) &= \Pr(\qr(UM)V \in S)\\
+\Pr\left(U\qr(M)V\in S\right) &= \Pr\left(\qr(UM)V \in S\right)\\
   &= \Pr\left(\qr(M)V \in S             \right)\\
   &= \Pr\left( (V\Tr\qr(M)\Tr)\Tr \in S \right)\\
   &= \Pr\left( (V\Tr\qr(M))\Tr \in S    \right)\\
   &= \Pr\left((\qr(M))\Tr \in S         \right)\\
-  &= \Pr\left(\qr(M) \in S              \right)\qedhere
+  &= \Pr\left(\qr(M) \in S              \right)
+\end{align}
+\end{proof}
+\end{lemma}
+
+\begin{lemma}
+Listing~\ref{sample_SOn} induces the Haar measure on $\SOn$.
+
+\begin{proof}
+Define the matrix
+\[
+  C = \begin{bmatrix}-1 & \zeros\Tr\\ \zeros & I_{n-1} \end{bmatrix}.
+\]
+
+Define $f:\On\to\SOn$ with
+\[
+  f(X) = \left\{
+\begin{array}{ll}
+  X & \mbox{if }\det{X} = 1\\
+ XC & \mbox{if }\det{X} = -1
+\end{array}\right.
+\]
+It is clear that listing~\ref{sample_SOn} will sample a matrix $M$ from $\On$,
+  and return $f(M)$.
+
+If we let $S \subset \SOn$, then
+\begin{align}\label{SOn:uso}
+  \Pr\left(f(M) \in S\right)
+  &=\Pr\left(M \in S \right) + \Pr\left( MC \in S \right) \\
+  &=2\Pr\left(M \in S \right)
+\end{align}
+because $C$ is orthogonal, and because of the rotational invariance of
+  listing~\ref{sample_On}.
+
+Let $\mu_\On$ and $\mu_\SOn$ be the measures induced by
+  listings~\ref{sample_On} and \ref{sample_SOn}, respectively.
+We showed in (\ref{SOn:uso}) that $\mu_\SOn(S) = 2\mu_\On(S\cap \SOn)$ for
+  $S\subset\On$.
+Let $S \subset \SOn$, and let $U,V \in \SOn$.
+To show that listing~\ref{sample_SOn} induces Haar measure, we note
+\begin{align}
+  \mu_\SOn(USV) &= 2 \mu_\On(U(S\cap\SOn)V)\\
+  &= 2 \mu_\On(USV \cap U\SOn V)\\
+  &= 2 \mu_\On(S \cap \SOn)\\
+  &= \mu_\SOn(S).
 \end{align}
 \end{proof}
 \end{lemma}
@@ -136,6 +182,30 @@ function [X] = sample_from_SU(n)
 X = sample_from_U(n);
 X = X / (det(X)^(1/n));
 \end{lstlisting}
+
+\begin{lemma}
+Listing~\ref{sample_SUn} induces the Haar measure on $\SUn$.
+
+\begin{proof}
+Define $f:\Un\to\SUn$ with $f(X) = (\det X)^{-\frac{1}{n}}X$.
+We can also write $f(X) = XC((\det X)^{-\frac{1}{n}})$, where $C(x)=xI_n$.
+Notice that $C(x)$ commutes with $n\times n$ matrices for every $x$.
+It is clear that listing~\ref{sample_SUn} will sample a matrix $M$ from $\Un$,
+  and return $f(M)$.
+In other words, if $\mu_\Un$ and $\mu_\SUn$ be the measures induced by
+  listings~\ref{sample_Un} and \ref{sample_SUn}, respectively, then
+  $\mu_\SUn(S) = \mu_\Un(S)$ for all $S\subset\SUn$.
+
+Let $S\subset \SUn$, and $U,V\in \SUn$.
+To show that $\mu_\SUn$ is Haar measure, we see that
+\begin{align}
+  \mu_\SUn\left(USV\right)  &= \mu_\Un\left(f^{-1}(USV)\right) \\
+                            &= \mu_\Un\left(Uf^{-1}(S)V\right) \\
+                            &= \mu_\Un\left(f^{-1}(S)\right) \\
+                            &= \mu_\SUn\left(S\right).
+\end{align}
+\end{proof}
+\end{lemma}
 
 \thispagestyle{empty}
 \bibliographystyle{abbrv}
