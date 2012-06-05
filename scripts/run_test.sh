@@ -29,7 +29,6 @@ EOF
 command=`echo "$command"`
 
 pushd ../code
-
 matlab -Xmm2048m -nodesktop -nosplash <<EOF
 `echo "$command"`
 EOF
