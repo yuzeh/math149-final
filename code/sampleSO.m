@@ -2,12 +2,9 @@ function [ Q ] = sampleSO( n )
 %SAMPLESO Summary of this function goes here
 %   Detailed explanation goes here
 
-M = randn(n);
-Q = qr_pos(M);
-while det(Q) < 0
-    M = randn(n);
-    Q = qr_pos(M);
+Q = sampleO(n);
+if det(Q) < 0
+    Q(:,1) = -Q(:,1);
 end
 
 end
-

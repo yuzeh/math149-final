@@ -7,8 +7,8 @@
 %  - matrix_group
 %  - matrix_dimension
 
-datasets = {'SO', 'U', 'SU'};
-samplers = {@sampleSO, @sampleU, @sampleSU};
+datasets = {'O', 'SO', 'U', 'SU'};
+samplers = {@sampleO, @sampleSO, @sampleU, @sampleSU};
 norms = {@norm2mat, @norm1vec, @norm2vec};
 norms_label = {'norm2mat', 'norm1vec', 'norm2vec'};
 
