@@ -26,7 +26,7 @@ matrix_norm = $matrix_norm;
 num_samples = $num_samples;
 num_landmark_points = $num_landmark_points;
 max_filtration_value = $max_filtration_value;
-testSampler
+run_persistence
 EOF
 command=`echo "$command"`
 
