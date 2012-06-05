@@ -5,8 +5,8 @@ if [[ `echo ${PWD##*/} | tr -d '\n'` != 'scripts' ]]; then
   exit 1
 fi
 
-if [[ $# -lt 6 ]]; then
-  echo "usage: $0 matrix_group matrix_dimension matrix_norm num_samples num_landmark_points max_filtration_value"
+if [[ $# -lt 5 ]]; then
+  echo "usage: $0 matrix_group matrix_dimension matrix_norm num_samples num_landmark_points"
   exit 1
 fi
 
@@ -16,7 +16,6 @@ matrix_dimension=$2
 matrix_norm=$3
 num_samples=$4
 num_landmark_points=$5
-max_filtration_value=$6
 
 read -d '' command <<EOF
 load_javaplex;
@@ -25,14 +24,13 @@ matrix_dimension = $matrix_dimension;
 matrix_norm = $matrix_norm;
 num_samples = $num_samples;
 num_landmark_points = $num_landmark_points;
-max_filtration_value = $max_filtration_value;
 run_persistence
 EOF
 command=`echo "$command"`
 
 pushd ../code
 
-matlab -nodesktop -nosplash <<EOF
+matlab -Xmm2048m -nodesktop -nosplash <<EOF
 `echo "$command"`
 EOF
 
