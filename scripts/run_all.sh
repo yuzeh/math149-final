@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 
-n_matrix_dims=4
-n_matrix_norms=4
-n_matrix_groups=4
+n_matrix_dims=3
+n_matrix_norms=3
+n_matrix_groups=3
 min_samples=50
 max_samples=2000
 min_landmark_prop=1
-max_landmark_prop=4
+max_landmark_prop=2
 
 for (( mat_grp=1; mat_grp<=$n_matrix_groups; mat_grp++ )); do
 for (( mat_dim=1; mat_dim<=$n_matrix_dims; mat_dim++ )); do
