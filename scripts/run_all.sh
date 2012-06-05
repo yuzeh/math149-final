@@ -14,7 +14,7 @@ for (( mat_norm=1; mat_norm<=$n_matrix_norms; mat_norm++ )); do
 for (( n_samp=$min_samples; n_samp<=$max_samples; n_samp*=2 )); do
 for (( prop=$min_landmark_prop; prop<=$max_landmark_prop; prop++ )); do
   n_landmark_pts=$(($prop*$n_samp/10))
-  echo "./run_test.sh $mat_grp $mat_dim $mat_norm $n_samp $n_landmark_pts"
+  echo "`pwd`/run_test.sh $mat_grp $mat_dim $mat_norm $n_samp $n_landmark_pts"
 done
 done
 done
