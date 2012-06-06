@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 
 n_matrix_dims=3
-n_matrix_norms=1
+n_matrix_norms=2
 n_matrix_groups=4
-min_samples=100
-max_samples=2000
+min_samples=250
+max_samples=4000
 min_landmark_prop=1
 max_landmark_prop=1
 

@@ -26,10 +26,12 @@ num_samples = $num_samples;
 num_landmark_points = $num_landmark_points;
 run_persistence
 EOF
+
 command=`echo "$command"`
 
 pushd ../code
 
+echo $command
 matlab -nodesktop -nosplash <<EOF
 `echo "$command"`
 EOF
