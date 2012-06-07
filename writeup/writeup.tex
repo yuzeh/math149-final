@@ -46,9 +46,10 @@ columns=fullflexible
 \newcommand{\SUn}{\MG{SU}{n}}
 \newcommand{\SOn}{\MG{SO}{n}}
 \newcommand{\qr}{\mathbf{qr}}
+\newcommand{\GS}{\mathbf{gs}}
 
 {
-\title{Computing the Homology of Matrix groups}
+\title{Computing the Homology of Classical Groups}
 \author{Xavier Falco, Yuze ``Dan'' Huang, Rafael Witten}
 \date{\today}
 \begin{document}
@@ -56,17 +57,75 @@ columns=fullflexible
 \thispagestyle{empty}
 %\tableofcontents
 %\thispagestyle{empty}
+\section{Introduction and Explanation of Classical Groups}
+
+In this work we attempt to shed light on the homology of the Classical Groups $\On$, $\SOn$, $\Un$ and $\SUn$. As a reminder, $\On$ is the group of orthogonal matrices viewed as a subgroup of $\reals^{n \times n}$, $\SOn$ is the subgroup of $\On$ with determinant $1$, $\Un$ is the group of unitary matrices viewed as a subgroup of $\complexes^{n\times n}$ and finally $\SUn$ viewed as a subgroup of $\SOn$. In turn, each of these sets inherit the underlying topology of $\reals^{n \times n}$ or $\complexes^{n \times n}$.
+
+\section{Theory}
+
+\subsection{Homology of \On}
+
+$\On$ is intuitively two disjoint copies of $\SOn$. If we define the matrix
+\[
+  C = \begin{bmatrix}-1 & \zeros\Tr\\ \zeros & I_{n-1} \end{bmatrix}.
+\]
+and choosing the map $f:\On\to\SOn$ with
+\[
+  f(X) = \left\{
+\begin{array}{ll}
+  X & \mbox{if }\det{X} = 1\\
+ XC & \mbox{if }\det{X} = -1
+\end{array}\right.
+\]
+we see immediately that $f$ is two to one from $\On$ to $\SOn$. S ince determinant is a continuous function $\On$ is at least two separate components (and we will later show that it is exactly two pieces) and each component is homeomorphic to $\SOn$, so we immediately see that the $k$th Homology Group of $\On$ is the cross-product of two copies of the $k$th Homology Group of $\SOn$.
+
+\subsection{Homology of \SOn}
+By counting the number of constraints, we can see immediately that \SOn has dimension $n(n-1)/2$
+
+We prove that $\SOn$ is path-connected. We define $\tt{gs}(X)$ to correspond to the Gram-Schmidt Orthogonalization of an input matrix $X$ and note (the proof is easy) that the Gram-Schmidt Orthogonalization of a non-singular matrix is continuous (although not absolutely-continuous). To define a path from $X \in \SOn$ to $I_n$, we simply choose
+\begin{equation}
+  p(t) = \GS( (1-t) X + t I_n).
+\end{equation}
+This is of course a continuous function of $t$ with $p(0) = X$ and $p(1) = I_n$. Critically, $\textbf{det} (p(t))=1$ since the determinant is a continuous function and the determinant of an orthogonal matrix is $\pm 1$ so the determinant can never ``flip".
+
+Trivially \MG{SO}{1} is simply $\{1\}$. Each map in $\MG{SO}{2}$ is defined simply by where it maps $e_1$; where it maps $e_1$ controls where it maps $e_2$. Since $e_1$ can be mapped to any vector of length $1$ we see that $\MG{SO}{2} \simeq S^1$. Finally we make use of the quaternions to capture the group structure of \MG{SO}{3}. If we consider the normalized quaternions (which are vectors in $\reals^4$ with Euclidean norm $1$) we can define a continuous mapping from $S^3$ to $\MG{SO}{3}$ by 
+\[
+  f(a,b,c,d) = \begin{bmatrix} a^2 + b^2 - c^2 - d^2   & 2bc - 2ad & 2bd + 2ac \\ 2bc+2ad & a^2 - b^2 + c^2- d^2 & 2cd - 2ab \\ 2bd-2ac & 2cd +2ab & a^2-b^2-c^2+d^2 \end{bmatrix}.
+\]
+
+This mapping is $2$ to $1$ with $f(x) = f(-x)$. Therefore we consider the projective space $\reals P^3$, which is $S^3$ with $x \sim -x$. It can be shown that the inverse mapping is continuous from $ \MG{SO}{3} \rightarrow \reals P^3$.
+
+
+
+
 \section{Sampling from $\On$, $\SOn$, $\Un$, and $\SUn$}
 
+In this work, will frequently make us of a function for taking the Gram-Schmidt Orthogonalization of a matrix. 
+	There is no method in MATLAB that does exactly this, so we wrote a wrapper around $\tt{qr}$ method. 
+
+\begin{lstlisting}[label=gramSchimdt,caption=Computing the Gram-Schmidt Orthogonalization of a input matrix.]
+function [X] = gs(M)
+[Q,R] = qr(M);
+X = Q * diag(sign(diag(R)));
+\end{lstlisting}
+
+The method calls $\tt{qr}$ to compute a QR decomposition and then normalizes $Q$ to correspond to the
+	 QR decomposition with the diagonal of $R$ real and positive. Since the $\tt{qr}$ decomposition is 
+	 unique when applied to non-singular square matrices and $R$ is constrained to have positive 
+	 diagonal, the $X$ returned from listing~\ref{gramSchimdt} is the Gram-Schmidt Orthogonalization
+	 of the input matrix $M$. 
+
+
+
 \subsection{$\On$ and $\SOn$}
-The following matlab code will sample uniformly from $\On$:
+The following matlab code samples uniformly from $\On$:
 
 \begin{lstlisting}[label=sample_On,caption=Sampling from $\On$]
 function [X] = sample_from_O(n)
-[X,R] = qr(randn(n));
+[X,R] = gs(randn(n));
 \end{lstlisting}
 
-In other words, we take the QR decomposition of a matrix whose elements are iid
+In other words, we take the Gram-Schmidt Orthogonalziation of a matrix whose elements are i.i.d.
   normally distributed.
 To sample uniformly from $\SOn$, we sample from $\On$, and then
   ``flip'' the determinant if it is not correct:
@@ -83,22 +142,20 @@ We will prove that these two algorithms sample uniformly (in the Haar sense)
   from their respective spaces.
 
 \begin{lemma}
-Listing~\ref{sample_On} will sample uniformly from $\On$, i.e. if $X$
+Listing~\ref{sample_On} samples uniformly from $\On$, i.e. if $X$
   is the output of listing~\ref{sample_On}, then for any set $S\subset
   \reals^{n\times n}$, $\Pr(X\in S) = \Pr(X\in USV)$ for all $U,V \in \On$.
 
 \begin{proof}
-Let $M$ be a random $n\times n$ matrix where the entries $s_{ij}$ are all iid
+Let $M$ be a random $n\times n$ matrix where the entries $s_{ij}$ are all i.i.d.
   normally distributed.
-Let $\qr:\reals^{n\times n} \to \On$ be the ``Q'' in the QR decomposition
-  of a matrix.
 \begin{align}
-\Pr\left(U\qr(M)V\in S\right) &= \Pr\left(\qr(UM)V \in S\right)\\
-  &= \Pr\left(\qr(M)V \in S             \right)\\
-  &= \Pr\left( (V\Tr\qr(M)\Tr)\Tr \in S \right)\\
-  &= \Pr\left( (V\Tr\qr(M))\Tr \in S    \right)\\
-  &= \Pr\left((\qr(M))\Tr \in S         \right)\\
-  &= \Pr\left(\qr(M) \in S              \right)
+\Pr\left(U\GS(M)V\in S\right) &= \Pr\left(\GS(UM)V \in S\right)\\
+  &= \Pr\left(\GS(M)V \in S             \right)\\
+  &= \Pr\left( (V\Tr\GS(M)\Tr)\Tr \in S \right)\\
+  &= \Pr\left( (V\Tr\GS(M))\Tr \in S    \right)\\
+  &= \Pr\left((\GS(M))\Tr \in S         \right)\\
+  &= \Pr\left(\GS(M) \in S              \right)
 \end{align}
 \end{proof}
 \end{lemma}
@@ -139,8 +196,8 @@ We showed in (\ref{SOn:uso}) that $\mu_\SOn(S) = 2\mu_\On(S\cap \SOn)$ for
 Let $S \subset \SOn$, and let $U,V \in \SOn$.
 To show that listing~\ref{sample_SOn} induces Haar measure, we note
 \begin{align}
-  \mu_\SOn(USV) &= 2 \mu_\On(U(S\cap\SOn)V)\\
-  &= 2 \mu_\On(USV \cap U\SOn V)\\
+  \mu_\SOn(USV) &= 2 \mu_\On \left( USV\cap\SOn \right)\\
+  &= 2 \mu_\On \left(U \left(S \cap \SOn \right) V \right)\\
   &= 2 \mu_\On(S \cap \SOn)\\
   &= \mu_\SOn(S).
 \end{align}
@@ -150,27 +207,16 @@ To show that listing~\ref{sample_SOn} induces Haar measure, we note
 \subsection{$\Un$ and $\SUn$}
 
 For $\Un$, we have the same idea: generate a random complex matrix, and then
-  orthogonalize it.
-There is one small issue: without forcing constraints on the diagonal of the
-  matrix $R$ in the QR decomposition $M=QR$, this decomposition is actually
-  {\bf not} unique.
-This is important, because some implementations of $\qr$ will not induce
-  the Haar measure on $\Un$.
-However, if we constrain the diagonal of $R$ to have strictly positive (real)
-  entries, then the induced measure will be Haar.
+  orthogonalize it. As before, the key is to choose the correct measure to draw
+  the initial random complex matrix from.
 
 A proof that the measure induced by listing~\ref{sample_Un} is the Haar
   measure on $\Un$, meaning this sampling method uniformly samples from $\Un$,
   is provided in \cite{Mezzadri2007}.
 
 \begin{lstlisting}[label=sample_Un,caption=Sampling from $\Un$]
-function [Q] = qr_pos(M)
-[Q,R] = qr(M);
-Q = Q * diag(sign(diag(R)));
-end
-
 function [X] = sample_from_U(n)
-X = qr_pos(randn(n) + 1i * randn(n));
+X = gs(randn(n) + 1i * randn(n));
 end
 \end{lstlisting}
 
@@ -188,13 +234,13 @@ Listing~\ref{sample_SUn} induces the Haar measure on $\SUn$.
 
 \begin{proof}
 Define $f:\Un\to\SUn$ with $f(X) = (\det X)^{-\frac{1}{n}}X$.
-We can also write $f(X) = XC((\det X)^{-\frac{1}{n}})$, where $C(x)=xI_n$.
-Notice that $C(x)$ commutes with $n\times n$ matrices for every $x$.
-It is clear that listing~\ref{sample_SUn} will sample a matrix $M$ from $\Un$,
+We can also write $f(X) = XC \left((\det X)^{-\frac{1}{n}} \right)$, where $C(x)=xI_n$.
+Notice that $C(x)$ commutes with every $n\times n$ matrix for every $x$.
+In these terms, listing~\ref{sample_SUn} will sample a matrix $M$ from $\Un$,
   and return $f(M)$.
-In other words, if $\mu_\Un$ and $\mu_\SUn$ be the measures induced by
+In other words, if $\mu_\Un$ and $\mu_\SUn$ are the measures induced by
   listings~\ref{sample_Un} and \ref{sample_SUn}, respectively, then
-  $\mu_\SUn(S) = \mu_\Un(S)$ for all $S\subset\SUn$.
+  $\mu_\SUn(S) = \mu_\Un \left(f^{-1}(S) \right)$ for all $S\subset\SUn$.
 
 Let $S\subset \SUn$, and $U,V\in \SUn$.
 To show that $\mu_\SUn$ is Haar measure, we see that
@@ -206,6 +252,8 @@ To show that $\mu_\SUn$ is Haar measure, we see that
 \end{align}
 \end{proof}
 \end{lemma}
+
+\section{Experimental Results}
 
 \thispagestyle{empty}
 \bibliographystyle{abbrv}
