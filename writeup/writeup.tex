@@ -36,9 +36,12 @@ columns=fullflexible
 
 \DeclareMathOperator{\argmin}{arg\,min}
 \newcommand{\Tr}{^\text{T}}
+\newcommand{\inv}{^{-1}}
 \newcommand{\zeros}{\mathbf{0}}
 \newcommand{\ones}{\mathbf{1}}
 \newcommand{\reals}{\mathbf{R}}
+\newcommand{\ints}{\mathbf{Z}}
+\newcommand{\proj}{\mathbf{P}}
 \newcommand{\complexes}{\mathbf{C}}
 \newcommand{\MG}[2]{{\text{#1}(#2)}}
 \newcommand{\Un}{\MG{U}{n}}
@@ -63,7 +66,7 @@ In this work we attempt to shed light on the homology of the Classical Groups $\
 
 \section{Theory}
 
-\subsection{Homology of \On}
+\subsection{Homology of $\On$}
 
 $\On$ is intuitively two disjoint copies of $\SOn$. If we define the matrix
 \[
@@ -77,31 +80,100 @@ and choosing the map $f:\On\to\SOn$ with
  XC & \mbox{if }\det{X} = -1
 \end{array}\right.
 \]
-we see immediately that $f$ is two to one from $\On$ to $\SOn$. S ince determinant is a continuous function $\On$ is at least two separate components (and we will later show that it is exactly two pieces) and each component is homeomorphic to $\SOn$, so we immediately see that the $k$th Homology Group of $\On$ is the cross-product of two copies of the $k$th Homology Group of $\SOn$.
+we see immediately that $f$ is two to one from $\On$ to $\SOn$. Since the determinant is a continuous function $\On$ is at least two separate components (and we will later show that it is exactly two pieces) and each component is homeomorphic to $\SOn$, so we immediately see that the $k$th Homology Group of $\On$ is the cross-product of two copies of the $k$th Homology Group of $\SOn$.
 
-\subsection{Homology of \SOn}
-By counting the number of constraints, we can see immediately that \SOn has dimension $n(n-1)/2$
+\subsection{Homology of $\SOn$}
+By counting the number of constraints, we can see immediately that $\SOn$ has dimension $n(n-1)/2$.
 
-We prove that $\SOn$ is path-connected. We define $\tt{gs}(X)$ to correspond to the Gram-Schmidt Orthogonalization of an input matrix $X$ and note (the proof is easy) that the Gram-Schmidt Orthogonalization of a non-singular matrix is continuous (although not absolutely-continuous). To define a path from $X \in \SOn$ to $I_n$, we simply choose
-\begin{equation}
-  p(t) = \GS( (1-t) X + t I_n).
-\end{equation}
-This is of course a continuous function of $t$ with $p(0) = X$ and $p(1) = I_n$. Critically, $\textbf{det} (p(t))=1$ since the determinant is a continuous function and the determinant of an orthogonal matrix is $\pm 1$ so the determinant can never ``flip".
+\begin{lemma}
+$\SOn$ is path connected.
+\begin{proof}
+We prove that every rotation matrix $R$ is connected to $I_n$, proving that $\SOn$ is connected.
+Using the Singular Value Decomposition, we can write $R = \sum_{i=1}^n u_i v_i\Tr$ where the $u_i$ and $v_i$ are columns of $n \times n$ orthogonal matrices.
+Since $VV\Tr = I_n$, we know that $I_n = \sum_{i=1}^n v_i v_i\Tr$.
+Inductively we assume that for $i<k<n$, $v_i = u_i$ and prove that $R$ is connected to a matrix of the form $\sum_{i=1}^k v_i v_i\Tr + \sum_{i=k+1}^n v_i'v_i\Tr$.
+
+We consider a path $p$ from $u_k$ to $v_k$ that does not go through the zero matrix and is orthogonal to $v_j$ for $j<k$.
+In general this is possible because $\reals^n \setminus \{0\}$ is path connected for $n>1$ and $n-k-1>1$.
+By taking the Gram-Schimdt Orthogonalization of $\{ v_1, \ldots v_{k-1}, p(t), u_{k+1}, \ldots, u_n \}$ (which is known to be continuous as a function of $t$)
+  we get a continuous path $p'$ from $t \in [0,1]$ to the $n$ orthogonal vectors. 
+Defining the map $f(s_1, \ldots, s_n) = \sum_{i=1}^n s_i v_i\Tr$, shows that $f \circ p'$ is a continuous function taking values in $\SOn$
+  with $f \circ p'(0) = \sum_{i=1}^{k-1} v_i v_i\Tr + \sum_{i=k}^n u_i v_i\Tr$ and $f \circ p'(1) = \sum_{i=1}^k v_i v_i\Tr + \sum_{i=k+1}^n u_i' v_i\Tr$.
+Hence $R$ is connected to $M = \sum_{i=1}^{n-1} v_i v_i\Tr + u_n' v_n\Tr$. But since $M$ is a rotation matrix, $u_n' = v_n$ and $M = I_n$.
+\end{proof}
+\end{lemma}
 
 Trivially \MG{SO}{1} is simply $\{1\}$. Each map in $\MG{SO}{2}$ is defined simply by where it maps $e_1$; where it maps $e_1$ controls where it maps $e_2$. Since $e_1$ can be mapped to any vector of length $1$ we see that $\MG{SO}{2} \simeq S^1$. Finally we make use of the quaternions to capture the group structure of \MG{SO}{3}. If we consider the normalized quaternions (which are vectors in $\reals^4$ with Euclidean norm $1$) we can define a continuous mapping from $S^3$ to $\MG{SO}{3}$ by 
 \[
   f(a,b,c,d) = \begin{bmatrix} a^2 + b^2 - c^2 - d^2   & 2bc - 2ad & 2bd + 2ac \\ 2bc+2ad & a^2 - b^2 + c^2- d^2 & 2cd - 2ab \\ 2bd-2ac & 2cd +2ab & a^2-b^2-c^2+d^2 \end{bmatrix}.
 \]
 
-This mapping is $2$ to $1$ with $f(x) = f(-x)$. Therefore we consider the projective space $\reals P^3$, which is $S^3$ with $x \sim -x$. It can be shown that the inverse mapping is continuous from $ \MG{SO}{3} \rightarrow \reals P^3$.
+This mapping is $2$ to $1$ with $f(x) = f(-x)$.
+Therefore we consider the projective space $\reals\proj^3$, which is $S^3/\sim$ where the equivalence relation $\sim$ is defined by $x \sim -x$.
+Let $g:S^3 \to \reals\proj^{3}$ be the quotient mapping, defined by $\sim$.
+There is a map $h: \MG{SO}{3} \to \reals\proj^3$ such that $g\circ f = h$.
+It can be shown that $h$ is bijective, and $h^{-1}$ exists and is continuous from $\MG{SO}{3} \rightarrow \reals\proj^3$.
+Hence, $h$ is a homeomorphism from $\MG{SO}{3}$ to $\reals\proj^3$.
+The Betti numbers of $\reals\proj^3$ is
+\[
+  \beta_i(\reals\proj^3) = \left\{
+  \begin{array}{ll}
+    1 & \mbox{if } i = 0,\ 1,\ 3\\
+    0 & \mbox{otherwise.}
+  \end{array}
+  \right.
+\]
 
+\subsection{Homology of $\Un$ and $\SUn$}
+We prove that $\Un$ and $\SUn$ are both path connected, so the first Betti number for both spaces is 1.
+Let $R\in\Un$.
+It is a well-known fact that $R$ is diagonalizable, i.e. there exists a unitary matrix $U$ and real numbers $\theta_1,\dots,\theta_n$ such that
+\[
+  R = U\begin{bmatrix} e^{i\theta_1} & & \\ & \ddots & \\ & & e^{i\theta_n} \end{bmatrix} U\inv.
+\]
+There is a path $p_R: [0,1] \to \Un$ from $R$ to $I_n$, defined by:
+\[
+  p_R(t) = \begin{bmatrix} e^{i(1-t)\theta_1} & & \\ & \ddots & \\ & & e^{i(1-t)\theta_n} \end{bmatrix} U\inv.
+\]
+Thus, every point in $\Un$ is path-connected to every other point in $\Un$ via $I_n$.
 
+The proof for $\SUn$ is very similar.
+We use the same decomposition as before, but we know that $\sum_{j=1}^n \theta_j =2k\pi$ for some $k\in\ints$.
+Without loss of generality, we can assume $k = 0$.
+(We can add a multiple of $2\pi$ to $\theta_1$ to force the sum to be zero.)
+The function $p_R: [0,1] \to \SUn$ defined as above, is also a path from $R$ to $I_n$.
+Thus, $\SUn$ is also path-connected.
 
+\begin{lemma}
+$\Un$ is homeomorphic to $\SUn\times S^1$.
+
+\begin{proof}
+We represent elements of $S^1$ with complex numbers.
+Define the function $f: \Un \to \SUn\times S^1$ by
+\[
+  f(M) = \left( (\det M)^{-1/n}M, \det M \right)
+\]
+and the function $g: \SUn\times S^1 \to \Un$ by
+\[
+  g(M,z) = z^{1/n}M.
+\]
+It is clear that $f$ and $g$ are both continuous.
+In order to prove that the spaces are homeomorphic, it remains to show that $f$ and $g$ are inverses, and that they are bijective.
+\begin{align}
+  (g \circ f)(M) &= \left( \det M \right)^{1/n} \left[\left( \det M \right)^{-1/n}M\right] = M\\
+  (f \circ g)(M, z) &= \left(\det\left(z^{1/n}M\right)^{-1/n}z^{1/n}M, \det\left(z^{1/n}M\right)\right)
+                     = \left(z^{-1/n}z^{1/n}M, z\right) = (M, z).
+\end{align}
+From the above two lines, it is also obvious that $f$ is surjective, which completes the proof.
+\end{proof}
+\end{lemma}
+Thus, we only need to know the homology of $\SUn$ to determine the homology of $\Un$.
+We know that $\MG{SU}{1} = \{1\}$ and $\MG{SU}{2} = S^3$, so $\MG{U}{1}$ = $S^1$ and $\MG{U}{2} = S^3\times S^1$.
 
 \section{Sampling from $\On$, $\SOn$, $\Un$, and $\SUn$}
 
-In this work, will frequently make us of a function for taking the Gram-Schmidt Orthogonalization of a matrix. 
-	There is no method in MATLAB that does exactly this, so we wrote a wrapper around $\tt{qr}$ method. 
+In this work, will frequently make us of a function for taking the Gram-Schmidt Orthogonalization of a matrix.
+  There is no method in MATLAB that does exactly this, so we wrote a wrapper around $\tt{qr}$ method.
 
 \begin{lstlisting}[label=gramSchimdt,caption=Computing the Gram-Schmidt Orthogonalization of a input matrix.]
 function [X] = gs(M)
@@ -110,12 +182,10 @@ X = Q * diag(sign(diag(R)));
 \end{lstlisting}
 
 The method calls $\tt{qr}$ to compute a QR decomposition and then normalizes $Q$ to correspond to the
-	 QR decomposition with the diagonal of $R$ real and positive. Since the $\tt{qr}$ decomposition is 
-	 unique when applied to non-singular square matrices and $R$ is constrained to have positive 
-	 diagonal, the $X$ returned from listing~\ref{gramSchimdt} is the Gram-Schmidt Orthogonalization
-	 of the input matrix $M$. 
-
-
+  QR decomposition with the diagonal of $R$ real and positive. Since the $\tt{qr}$ decomposition is
+  unique when applied to non-singular square matrices and $R$ is constrained to have positive
+  diagonal, the $X$ returned from listing~\ref{gramSchimdt} is the Gram-Schmidt Orthogonalization
+  of the input matrix $M$.
 
 \subsection{$\On$ and $\SOn$}
 The following matlab code samples uniformly from $\On$:
